@@ -18,7 +18,7 @@ class PostScreen extends StatelessWidget {
         actions: [
           IconButton(
             // 2- Fetch the post
-            onPressed: () => {postProvider.fetchPost(45)},
+            onPressed: () => {postProvider.fetchPost()},
             icon: const Icon(Icons.update),
           ),
         ],
@@ -29,8 +29,8 @@ class PostScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBody(PostProvider courseProvider) {
-    final postValue = courseProvider.postValue;
+  Widget _buildBody(PostProvider postProvider) {
+    final postValue = postProvider.postValue;
 
     if (postValue == null) {
       return Text('Tap refresh to display post'); // display an empty state
@@ -43,8 +43,13 @@ class PostScreen extends StatelessWidget {
       case AsyncValueState.error:
         return Text('Error: ${postValue.error}'); // display a error
 
+      //because now we display list of post we should use ListView
       case AsyncValueState.success:
-        return PostCard(post: postValue.data!); // display the post
+        return ListView.builder(
+            itemCount: postValue.data!.length,
+            itemBuilder: (context, index) {
+              return PostCard(post: postValue.data![index]);
+            });
     }
   }
 }
@@ -56,6 +61,16 @@ class PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(title: Text(post.title), subtitle: Text(post.description));
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15), // Rounded corners
+        side: BorderSide(color: Colors.black, width: 1), // Border
+      ),
+      color: Colors.amber, // Background color
+      child: ListTile(
+        title: Text(post.title),
+        subtitle: Text(post.description),
+      ),
+    );
   }
 }
